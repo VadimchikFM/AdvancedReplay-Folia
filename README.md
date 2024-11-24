@@ -1,10 +1,19 @@
-# AdvancedReplay
+# AdvancedReplay (Folia Fork)
 
 AdvancedReplay is a Minecraft 1.8 & 1.21 Replay plugin. It can record players on your Server and save the recorded data to a file or database, so you can watch the replays at any time. Currently it records almost every action a player does and can be easily controlled with commands or the API.
 
+**This Fork is compatible with Folia and has been tested briefly, and everything works fine.**
+
+**If there are any issues, please report them to me.**
+
 ## Downloads
+### Original version
 **Modrinth**: https://modrinth.com/plugin/advancedreplay  
 **Spigot**: https://www.spigotmc.org/resources/advancedreplay-1-8-1-21.52849/
+### Folia version
+need: Minecraft 1.20.6+, Java 21+
+
+**Github**: https://github.com/404Setup/AdvancedReplay-Folia/releases
 
 ## API
 ### Maven
