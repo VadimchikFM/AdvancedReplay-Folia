@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.jumper251.replay.filesystem.Messages;
+import me.jumper251.replay.utils.Platform;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -68,13 +69,16 @@ public class ReplayStartCommand extends SubCommand {
 					.arg("duration", duration)
 					.send(cs);
 
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					ReplayAPI.getInstance().stopReplay(name, true, true);
-				}
-			}.runTaskLater(ReplaySystem.getInstance(), duration * 20);
+            BukkitRunnable task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    ReplayAPI.getInstance().stopReplay(name, true, true);
+                }
+            };
+            if (Platform.isFolia()) {
+                if (cs instanceof Player psender) psender.getScheduler().runDelayed(ReplaySystem.getInstance(), (e) -> task.run(), null, duration * 20);
+                else Bukkit.getGlobalRegionScheduler().runDelayed(ReplaySystem.getInstance(), (e) -> task.run(), duration * 20);
+            } else task.runTaskLater(ReplaySystem.getInstance(), duration * 20);
 		}
 		
 		if (args.length <= 2) {

@@ -571,8 +571,8 @@ public class ReplayingUtils {
 		if (projData != null && projData.getType() != EntityBridge.FISHING_BOBBER.toEntityType()) {
 			
 			if (projData.getType() == EntityType.ENDER_PEARL && VersionUtil.isCompatible(VersionEnum.V1_8)) return;
-			
-			new BukkitRunnable() {
+
+            BukkitRunnable task = new BukkitRunnable() {
 				
 				@Override
 				public void run() {
@@ -580,7 +580,10 @@ public class ReplayingUtils {
 					proj.setVelocity(LocationData.toLocation(projData.getVelocity()).toVector());
 					
 				}
-			}.runTask(ReplaySystem.getInstance());
+            };
+            // TODO: Not clear what to do here
+            if (Platform.isFolia()) Bukkit.getRegionScheduler().run(ReplaySystem.getInstance(), LocationData.toLocation(projData.getVelocity()), (e) -> task.run());
+            else task.runTask(ReplaySystem.getInstance());
 		}
 		
 		if (fishing != null) {
@@ -598,8 +601,8 @@ public class ReplayingUtils {
 		if (ConfigManager.WORLD_RESET && !this.replayer.getBlockChanges().containsKey(loc)) {
 			this.replayer.getBlockChanges().put(loc, blockChange.getBefore());
 		}
-		
-		new BukkitRunnable() {
+
+		BukkitRunnable task = new BukkitRunnable() {
 			
 			@SuppressWarnings("deprecation")
 			@Override
@@ -639,7 +642,10 @@ public class ReplayingUtils {
 				}
 				
 			}
-		}.runTask(ReplaySystem.getInstance());
+		};
+		if (Platform.isFolia()) {
+			Bukkit.getRegionScheduler().run(ReplaySystem.getInstance(), replayer.getWatchingPlayer().getLocation(), (e) -> task.run());
+		} else task.runTask(ReplaySystem.getInstance());
 	}
 	
 	private void playTNTFuse(Location loc, BlockChangeData blockChange) {
@@ -663,8 +669,8 @@ public class ReplayingUtils {
 	
 	private void spawnItemStack(EntityItemData entityData) {
 		final Location loc = LocationData.toLocation(entityData.getLocation());
-		
-		new BukkitRunnable() {
+
+        BukkitRunnable task = new BukkitRunnable() {
 			
 			@Override
 			public void run() {
@@ -674,13 +680,15 @@ public class ReplayingUtils {
 				itemEntities.put(entityData.getId(), item);
 				
 			}
-		}.runTask(ReplaySystem.getInstance());
+        };
+        if (Platform.isFolia()) Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> task.run());
+        else task.runTask(ReplaySystem.getInstance());
 	}
 	
 	public void despawn(List<Entity> entities, int[] ids) {
 		
 		if (entities != null && entities.size() > 0) {
-			new BukkitRunnable() {
+            BukkitRunnable task = new BukkitRunnable() {
 				
 				@Override
 				public void run() {
@@ -688,7 +696,10 @@ public class ReplayingUtils {
 						if (en != null) en.remove();
 					}
 				}
-			}.runTask(ReplaySystem.getInstance());
+            };
+            if (Platform.isFolia())
+                Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> task.run());
+            else task.runTask(ReplaySystem.getInstance());
 		}
 		
 		if (ids != null && ids.length > 0) {

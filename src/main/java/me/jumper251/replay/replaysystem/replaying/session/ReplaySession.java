@@ -6,6 +6,7 @@ import java.util.List;
 import me.jumper251.replay.replaysystem.replaying.ReplayHelper;
 import me.jumper251.replay.replaysystem.replaying.ReplayPacketListener;
 import me.jumper251.replay.replaysystem.replaying.Replayer;
+import me.jumper251.replay.utils.Platform;
 import org.bukkit.Bukkit;
 
 import org.bukkit.GameMode;
@@ -96,14 +97,15 @@ public class ReplaySession {
 		
 		this.packetListener.unregister();
 
-		
-		new BukkitRunnable() {
+
+		BukkitRunnable task = new BukkitRunnable() {
 			
 			@Override
 			public void run() {
 				resetPlayer();
-				
-				player.teleport(start);
+
+				if (Platform.isFolia()) player.teleportAsync(start);
+				else player.teleport(start);
 				
 				
 				if (ConfigManager.HIDE_PLAYERS) {
@@ -117,7 +119,9 @@ public class ReplaySession {
 				ReplaySessionFinishEvent finishEvent = new ReplaySessionFinishEvent(replayer.getReplay(), player);
 				Bukkit.getPluginManager().callEvent(finishEvent);
 			}
-		}.runTask(ReplaySystem.getInstance());
+		};
+		if (Platform.isFolia()) Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> task.run());
+		else task.runTask(ReplaySystem.getInstance());
 		
 
 	}

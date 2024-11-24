@@ -7,8 +7,10 @@ import java.util.Arrays;
 
 import me.jumper251.replay.filesystem.*;
 import me.jumper251.replay.legacy.LegacyUtils;
+import me.jumper251.replay.utils.Platform;
 import me.jumper251.replay.utils.VersionUtil;
 import me.jumper251.replay.utils.version.MaterialBridge;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 
 import org.bukkit.entity.Player;
@@ -142,7 +144,8 @@ public class ReplayListener extends AbstractListener {
 						String owner = e.getCurrentItem().getItemMeta().getDisplayName().replaceAll("§6", "");
 						if (replayer.getNPCList().containsKey(owner)) {
 							INPC npc = replayer.getNPCList().get(owner);
-							p.teleport(npc.getLocation());
+							if (Platform.isFolia()) p.teleportAsync(npc.getLocation());
+								else p.teleport(npc.getLocation());
 						}
 					}
 				}
@@ -256,8 +259,8 @@ public class ReplayListener extends AbstractListener {
 		Player p = e.getPlayer();
 		if (ReplayHelper.replaySessions.containsKey(p.getName())) {
 			final Replayer replayer = ReplayHelper.replaySessions.get(p.getName());
-			
-			new BukkitRunnable() {
+
+            BukkitRunnable task = new BukkitRunnable() {
 				
 				@Override
 				public void run() {
@@ -271,7 +274,10 @@ public class ReplayListener extends AbstractListener {
 					}
 					
 				}
-			}.runTaskLater(ReplaySystem.getInstance(), 20);
+            };
+            if (Platform.isFolia()) {
+                Bukkit.getRegionScheduler().runDelayed(ReplaySystem.getInstance(), p.getLocation(), (c) -> task.run(), 20);
+            } else task.runTaskLater(ReplaySystem.getInstance(), 20);
 		}
 	}
 	
