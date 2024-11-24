@@ -1,16 +1,8 @@
 package me.jumper251.replay.replaysystem.replaying;
 
 import java.util.ArrayList;
-
-
-
 import java.util.Collection;
 import java.util.HashMap;
-
-
-
-
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,8 +18,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-
-
 import me.jumper251.replay.ReplaySystem;
 import me.jumper251.replay.api.IReplayHook;
 import me.jumper251.replay.api.ReplayAPI;
@@ -41,8 +31,6 @@ import me.jumper251.replay.replaysystem.data.types.LocationData;
 import me.jumper251.replay.replaysystem.data.types.SpawnData;
 import me.jumper251.replay.replaysystem.utils.entities.IEntity;
 import me.jumper251.replay.replaysystem.utils.entities.INPC;
-
-
 
 public class Replayer {
 
@@ -126,22 +114,17 @@ public class Replayer {
 				if (Replayer.this.tmpTicks % 1 != 0) return;
 				
 				if (currentTicks < duration) {
-
 					executeTick(currentTicks++, ReplayingMode.PLAYING);
-
 					if ((currentTicks + 2) < duration && speed == 2)  {
 						executeTick(currentTicks++, ReplayingMode.PLAYING);
-
 					}
-					
 				} else {
-					
 					stop();
 				}
 			}
 		};
 
-		if (Platform.isFolia()) task = Bukkit.getAsyncScheduler().runAtFixedRate(ReplaySystem.getInstance(), (e) -> this.run.run(), 1, 50 , TimeUnit.MILLISECONDS);
+		if (Platform.isFolia()) task = Bukkit.getAsyncScheduler().runAtFixedRate(ReplaySystem.getInstance(), (e) -> this.run.run(), 50, 50 , TimeUnit.MILLISECONDS);
 		else this.run.runTaskTimerAsynchronously(ReplaySystem.getInstance(), 1, 1);
 
 		return true;
@@ -156,9 +139,7 @@ public class Replayer {
 
 			List<ActionData> list = data.getActions().get(tick);
 			for (ActionData action : list) {
-
 				utils.handleAction(action, data, mode);
-
 				if (action.getType() == ActionType.CUSTOM) {
 					if (ReplayAPI.getInstance().getHookManager().isRegistered()) {
 						for (IReplayHook hook : ReplayAPI.getInstance().getHookManager().getHooks()) {
@@ -166,9 +147,7 @@ public class Replayer {
 						}
 					}
 				}
-			
 			}
-			
 			if (tick == 0) data.getActions().remove(tick);
 		}
 	}

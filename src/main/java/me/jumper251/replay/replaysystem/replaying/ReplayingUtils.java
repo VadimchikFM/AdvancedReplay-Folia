@@ -735,7 +735,8 @@ public class ReplayingUtils {
 	private void setBlocks(Map<Location, ItemData> changes) {
 		changes.forEach((location, itemData) -> {
 			if (VersionUtil.isAbove(VersionEnum.V1_13)) {
-				location.getBlock().setType(getBlockMaterial(itemData));
+				if (Platform.isFolia()) Bukkit.getRegionScheduler().run(ReplaySystem.getInstance(), location, (e) -> location.getBlock().setType(getBlockMaterial(itemData)));
+				else location.getBlock().setType(getBlockMaterial(itemData));
 			} else {
 				LegacyBlock.setTypeIdAndData(location.getBlock(), itemData.getId(), (byte) itemData.getSubId(), true);
 			}
