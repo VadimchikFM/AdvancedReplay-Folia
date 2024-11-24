@@ -681,14 +681,24 @@ public class ReplayingUtils {
 				
 			}
         };
-        if (Platform.isFolia()) Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> task.run());
+        if (Platform.isFolia()) Bukkit.getRegionScheduler().run(ReplaySystem.getInstance(), loc, (e) -> task.run());
         else task.runTask(ReplaySystem.getInstance());
 	}
 	
 	public void despawn(List<Entity> entities, int[] ids) {
 		
 		if (entities != null && entities.size() > 0) {
-            BukkitRunnable task = new BukkitRunnable() {
+			if (Platform.isFolia()) {
+				Bukkit.getAsyncScheduler().runNow(ReplaySystem.getInstance(), (e) -> {
+					for (Entity en : entities) {
+						if (en != null) {
+							en.getScheduler().run(ReplaySystem.getInstance(), (re) -> en.remove(), null);
+						}
+					}
+				});
+				return;
+			}
+            new BukkitRunnable() {
 				
 				@Override
 				public void run() {
@@ -696,10 +706,7 @@ public class ReplayingUtils {
 						if (en != null) en.remove();
 					}
 				}
-            };
-            if (Platform.isFolia())
-                Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> task.run());
-            else task.runTask(ReplaySystem.getInstance());
+            }.runTask(ReplaySystem.getInstance());
 		}
 		
 		if (ids != null && ids.length > 0) {
