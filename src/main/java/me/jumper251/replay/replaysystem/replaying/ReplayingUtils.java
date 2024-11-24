@@ -696,10 +696,7 @@ public class ReplayingUtils {
 						}
 					}
 				});
-				return;
-			}
-            new BukkitRunnable() {
-				
+			} else new BukkitRunnable() {
 				@Override
 				public void run() {
 					for (Entity en : entities) {
