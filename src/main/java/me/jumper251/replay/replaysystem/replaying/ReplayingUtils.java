@@ -20,6 +20,7 @@ import me.jumper251.replay.replaysystem.utils.MetadataBuilder;
 import me.jumper251.replay.replaysystem.utils.NPCManager;
 import me.jumper251.replay.replaysystem.utils.entities.*;
 import me.jumper251.replay.utils.LogUtils;
+import me.jumper251.replay.utils.Platform;
 import me.jumper251.replay.utils.version.MaterialBridge;
 import me.jumper251.replay.utils.MathUtils;
 import me.jumper251.replay.utils.VersionUtil;
@@ -704,12 +705,15 @@ public class ReplayingUtils {
 	}
 	
 	public void resetChanges(Map<Location, ItemData> changes) {
-		if (!Bukkit.isPrimaryThread()) {
-			Bukkit.getScheduler().runTask(ReplaySystem.getInstance(), () -> setBlocks(changes));
+		if (Platform.isFolia()) {
+			Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> setBlocks(changes));
 		} else {
-			setBlocks(changes);
+			if (!Bukkit.isPrimaryThread()) {
+				Bukkit.getScheduler().runTask(ReplaySystem.getInstance(), () -> setBlocks(changes));
+			} else {
+				setBlocks(changes);
+			}
 		}
-		
 	}
 	
 	@SuppressWarnings("deprecation")

@@ -14,10 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import me.jumper251.replay.filesystem.MessageBuilder;
 import me.jumper251.replay.filesystem.Messages;
 import me.jumper251.replay.replaysystem.replaying.session.ReplaySession;
+import me.jumper251.replay.utils.Platform;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -54,6 +57,7 @@ public class Replayer {
 	private Replay replay;
 	
 	private BukkitRunnable run;
+	private io.papermc.paper.threadedregions.scheduler.ScheduledTask task;
 	
 	private int currentTicks;
 	private double speed, tmpTicks;
@@ -100,7 +104,8 @@ public class Replayer {
 		ReplayHelper.replaySessions.put(watcher.getName(), this);
 
 		if (spawnData != null) {
-			watcher.teleport(LocationData.toLocation(spawnData.getLocation()));
+			if (Platform.isFolia()) watcher.teleportAsync(LocationData.toLocation(spawnData.getLocation()));
+			else watcher.teleport(LocationData.toLocation(spawnData.getLocation()));
 		}
 
 		this.session.startSession();
@@ -135,8 +140,9 @@ public class Replayer {
 				}
 			}
 		};
-		
-		this.run.runTaskTimerAsynchronously(ReplaySystem.getInstance(), 1, 1);
+
+		if (Platform.isFolia()) task = Bukkit.getAsyncScheduler().runAtFixedRate(ReplaySystem.getInstance(), (e) -> this.run.run(), 1, 50 , TimeUnit.MILLISECONDS);
+		else this.run.runTaskTimerAsynchronously(ReplaySystem.getInstance(), 1, 1);
 
 		return true;
 	}
@@ -181,8 +187,9 @@ public class Replayer {
 	
 	public void stop() {
 		sendMessage(Messages.REPLAYING_FINISHED_WATCHING.getBuilder());
-		
-		this.run.cancel();
+
+		if (Platform.isFolia() && task != null) task.cancel();
+		else this.run.cancel();
 		this.getReplay().getData().getActions().clear();
 		
 		for (INPC npc : this.npcs.values()) {

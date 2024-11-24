@@ -53,7 +53,7 @@ public class ReplaySystem extends JavaPlugin {
 		libraryManager.addMavenCentral();
 
 		getLogger().info("Loading Replay v" + getDescription().getVersion() + " by " + getDescription().getAuthors().get(0));
-		
+
 		ConfigManager.loadConfigs();
 		ReplayManager.register();
 

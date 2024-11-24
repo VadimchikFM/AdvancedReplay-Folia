@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import java.util.List;
 
+import me.jumper251.replay.utils.Platform;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,12 +57,15 @@ public class Replay {
 	}
 	
 	public void play(Player watcher) {
-		if (!Bukkit.isPrimaryThread()) {
-			Bukkit.getScheduler().runTask(ReplaySystem.getInstance(), () -> startReplay(watcher));
+		if (Platform.isFolia()) {
+			Bukkit.getGlobalRegionScheduler().run(ReplaySystem.getInstance(), (e) -> startReplay(watcher));
 		} else {
-			startReplay(watcher);
+			if (!Bukkit.isPrimaryThread()) {
+				Bukkit.getScheduler().runTask(ReplaySystem.getInstance(), () -> startReplay(watcher));
+			} else {
+				startReplay(watcher);
+			}
 		}
-		
 	}
 		
 	private void startReplay(Player watcher) {

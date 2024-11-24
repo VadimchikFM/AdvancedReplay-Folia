@@ -3,7 +3,8 @@ version: '${version}'
 main: me.jumper251.replay.ReplaySystem
 author: Jumper251
 depend: [ProtocolLib]
-api-version: 1.13
+api-version: 1.20
+folia-supported: true
 commands:
   replay:
     description: Main Replay command

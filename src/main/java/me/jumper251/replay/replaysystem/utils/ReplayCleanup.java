@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
+import me.jumper251.replay.utils.Platform;
 import org.bukkit.Bukkit;
 
 import me.jumper251.replay.ReplaySystem;
@@ -19,8 +20,9 @@ public class ReplayCleanup {
 
 	public static void cleanupReplays() {
 		List<String> replays = ReplaySaver.getReplays();
-		
-		Bukkit.getScheduler().runTaskAsynchronously(ReplaySystem.getInstance(), () -> replays.forEach(ReplayCleanup::checkAndDelete));
+
+		if (Platform.isFolia()) Bukkit.getAsyncScheduler().runNow(ReplaySystem.getInstance(), (e) -> replays.forEach(ReplayCleanup::checkAndDelete));
+		else Bukkit.getScheduler().runTaskAsynchronously(ReplaySystem.getInstance(), () -> replays.forEach(ReplayCleanup::checkAndDelete));
 	}
 	
 	private static void checkAndDelete(String replay) {

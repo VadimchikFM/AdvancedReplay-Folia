@@ -22,7 +22,8 @@ public class ReplayManager {
             ReplayAPI.getInstance().recordReplay(null, Bukkit.getConsoleSender());
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(ReplaySystem.getInstance(), ReplayManager::delayedInit);
+        if (Platform.isFolia()) Bukkit.getAsyncScheduler().runNow(ReplaySystem.getInstance(), (e) -> delayedInit());
+        else Bukkit.getScheduler().runTaskAsynchronously(ReplaySystem.getInstance(), ReplayManager::delayedInit);
     }
 
     private static void registerEvents() {
