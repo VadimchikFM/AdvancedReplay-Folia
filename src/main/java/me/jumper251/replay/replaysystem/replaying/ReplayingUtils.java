@@ -644,7 +644,7 @@ public class ReplayingUtils {
 			}
 		};
 		if (Platform.isFolia()) {
-			Bukkit.getRegionScheduler().run(ReplaySystem.getInstance(), replayer.getWatchingPlayer().getLocation(), (e) -> task.run());
+			Bukkit.getRegionScheduler().run(ReplaySystem.getInstance(), loc, (e) -> task.run());
 		} else task.runTask(ReplaySystem.getInstance());
 	}
 	
