@@ -1,6 +1,8 @@
 package me.jumper251.replay.database;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import me.jumper251.replay.database.utils.DatabaseService;
 import me.jumper251.replay.replaysystem.data.ReplayInfo;
 import org.bson.Document;
@@ -11,10 +13,13 @@ import java.util.List;
 
 public class MongoService extends DatabaseService {
     private final MongoDatabase database;
-    private final String table = "replay";
+    private final String table;
 
-    public MongoService(MongoDatabase database) {
+    public MongoService(MongoDatabase database, String collectionName) {
         this.database = database;
+        this.table = collectionName;
+
+        this.database.getDB().getCollection(table).createIndex(Indexes.ascending("id"), new IndexOptions().unique(true));
     }
 
     @Override
@@ -26,7 +31,6 @@ public class MongoService extends DatabaseService {
     public void addReplay(String id, String creator, int duration, Long time, byte[] data) {
         Document query = new Document("id", id);
         Document updateDoc = new Document()
-                .append("id", id)
                 .append("creator", creator)
                 .append("duration", duration)
                 .append("time", time)

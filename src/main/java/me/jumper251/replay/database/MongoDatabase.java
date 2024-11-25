@@ -3,6 +3,7 @@ package me.jumper251.replay.database;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import me.jumper251.replay.database.utils.Database;
 import me.jumper251.replay.database.utils.DatabaseService;
 import me.jumper251.replay.utils.LogUtils;
@@ -13,11 +14,10 @@ import java.util.List;
 
 public class MongoDatabase extends Database {
     private final String connectionString;
+    private final MongoService service;
     private MongoClient client;
-    private MongoService service;
-    private com.mongodb.client.MongoDatabase db;
 
-    public MongoDatabase(String host, int port, String database, String user, String password) {
+    public MongoDatabase(String host, int port, String database, String collectionName, String user, String password) {
         super(host, port, database, user, password);
         String connectionString1 = "mongodb://";
         if (user == null || user.isEmpty()) connectionString1 = connectionString1 + host + ":" + port;
@@ -28,9 +28,9 @@ public class MongoDatabase extends Database {
 
         connectionString = connectionString1;
 
-        service = new MongoService(this);
-
         connect();
+
+        service = new MongoService(this, collectionName);
     }
 
     @Override
@@ -58,7 +58,11 @@ public class MongoDatabase extends Database {
             com.mongodb.client.MongoDatabase database = getDB();
             MongoCollection<Document> collection = database.getCollection(collectionName);
 
-            collection.updateOne(query, new Document("$set", updateDoc));
+            collection.findOneAndUpdate(
+                    query,
+                    new Document("$set", updateDoc),
+                    new FindOneAndUpdateOptions().upsert(true)
+            );
         } catch (Exception e) {
             System.err.println(e);
         }
@@ -106,6 +110,6 @@ public class MongoDatabase extends Database {
 
     @Override
     public String getDataSourceName() {
-        return "";
+        throw new UnsupportedOperationException();
     }
 }
