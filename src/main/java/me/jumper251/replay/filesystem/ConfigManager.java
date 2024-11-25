@@ -169,7 +169,8 @@ public class ConfigManager {
             int port = mongoCfg.getInt("port");
             String database = mongoCfg.getString("database");
             try {
-                password = URLEncoder.encode(password, StandardCharsets.UTF_8);
+                if (!(password == null || password.isEmpty()))
+                    password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             } catch (Exception ignored) {
             }
 

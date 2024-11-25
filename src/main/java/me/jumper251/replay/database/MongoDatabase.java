@@ -19,7 +19,14 @@ public class MongoDatabase extends Database {
 
     public MongoDatabase(String host, int port, String database, String user, String password) {
         super(host, port, database, user, password);
-        connectionString = "mongodb://" + user + ":" + password + "@" + host + ":" + port;
+        String connectionString1 = "mongodb://";
+        if (user == null || user.isEmpty()) connectionString1 = connectionString1 + host + ":" + port;
+        else if (password == null || password.isEmpty())
+            connectionString1 = connectionString1 + user + "@" + host + ":" + port;
+        else
+            connectionString1 = connectionString1 + user + ":" + password + "@" + host + ":" + port;
+
+        connectionString = connectionString1;
 
         service = new MongoService(this);
 
