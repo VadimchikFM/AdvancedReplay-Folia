@@ -80,11 +80,11 @@ public class ConfigManager {
         }
 
         // MongoDB
-        mongoCfg.addDefault("username", "mongouser");
-        mongoCfg.addDefault("password", "mongopass");
+        mongoCfg.addDefault("username", "");
+        mongoCfg.addDefault("password", "");
         mongoCfg.addDefault("host", "localhost");
         mongoCfg.addDefault("port", 27017);
-        mongoCfg.addDefault("database", "replays");
+        mongoCfg.addDefault("database", "replay");
 
         try {
             mongoCfg.save(mongoFile);

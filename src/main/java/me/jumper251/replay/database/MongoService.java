@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MongoService extends DatabaseService {
     private final MongoDatabase database;
-    private final String table = "replays";
+    private final String table = "replay";
 
     public MongoService(MongoDatabase database) {
         this.database = database;
