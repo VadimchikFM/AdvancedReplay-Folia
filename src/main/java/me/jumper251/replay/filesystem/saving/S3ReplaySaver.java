@@ -149,23 +149,18 @@ public class S3ReplaySaver implements IReplaySaver {
             }
 
             // 3. Load replay from temporary local file
-            try {
-                FileInputStream fileInputStream = new FileInputStream(temporaryReplayFile);
-                FilterInputStream inputStream = ConfigManager.getCompressInputStream(fileInputStream);
-                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-
-                ReplayData replayData = (ReplayData) objectInputStream.readObject();
-
-                objectInputStream.close();
-                inputStream.close();
-                fileInputStream.close();
-
-                consumer.accept(new Replay(replayName, replayData));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            ReplayData replayData;
+            try (FileInputStream fileInputStream = new FileInputStream(temporaryReplayFile)) {
+                try (FilterInputStream inputStream = ConfigManager.getCompressInputStream(fileInputStream)){
+                    try (ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
+                        replayData = (ReplayData) objectInputStream.readObject();
+                    }
+                }
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+
+            if (replayData != null) consumer.accept(new Replay(replayName, replayData));
 
             // 4. Delete temporary local file
             temporaryReplayFile.delete();
@@ -175,9 +170,7 @@ public class S3ReplaySaver implements IReplaySaver {
     @Override
     public boolean replayExists(String replayName) {
         // TODO: Change return type to CompletableFuture<Boolean>, to allow async checking of backend.
-        if (replayNameCache.contains(replayName))
-            return true;
-        return false;
+        return replayNameCache.contains(replayName);
     }
 
     @Override

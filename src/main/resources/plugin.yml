@@ -1,7 +1,9 @@
 name: AdvancedReplay
 version: '${version}'
 main: me.jumper251.replay.ReplaySystem
-author: Jumper251
+authors:
+  - Jumper251
+  - 404
 depend: [ProtocolLib]
 api-version: 1.20
 folia-supported: true

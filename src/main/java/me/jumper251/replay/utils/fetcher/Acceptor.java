@@ -1,9 +1,6 @@
 package me.jumper251.replay.utils.fetcher;
 
-
-
 public abstract class Acceptor<T> implements Runnable{
-
 	private Consumer<T> consumer;
 	
 	public Acceptor(Consumer<T> consumer) {

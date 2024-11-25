@@ -8,7 +8,6 @@ import java.net.URL;
 public class TextureInfo {
     private Textures textures;
 
-
     public Textures getTextures() {
         return textures;
     }
@@ -28,7 +27,6 @@ public class TextureInfo {
     public static class Textures {
         @SerializedName("SKIN")
         private Skin skin;
-
 
         public Skin getSkin() {
             return skin;

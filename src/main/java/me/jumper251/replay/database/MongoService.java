@@ -4,14 +4,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import me.jumper251.replay.database.utils.DatabaseService;
-import me.jumper251.replay.replaysystem.data.CompressionData;
 import me.jumper251.replay.replaysystem.data.ReplayInfo;
 import org.bson.Document;
 import org.bson.types.Binary;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MongoService extends DatabaseService {
     private final MongoDatabase database;

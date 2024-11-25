@@ -1,8 +1,6 @@
 package me.jumper251.replay.database;
 
-
 import me.jumper251.replay.database.utils.DatabaseService;
-import me.jumper251.replay.replaysystem.data.CompressionData;
 import me.jumper251.replay.replaysystem.data.ReplayInfo;
 
 import java.sql.PreparedStatement;
@@ -13,23 +11,19 @@ import java.util.List;
 
 
 public class MySQLService extends DatabaseService {
-
     private MySQLDatabase database;
-
     private String table = "replays";
 
     public MySQLService(MySQLDatabase database, String prefix) {
         if (prefix != null && prefix.length() > 0) {
             this.table = prefix + this.table;
         }
-
         this.database = database;
     }
 
     @Override
     public void createReplayTable() {
         database.update("CREATE TABLE IF NOT EXISTS " + this.table + " (id VARCHAR(40) PRIMARY KEY UNIQUE, creator VARCHAR(30), duration INT(255), time BIGINT(255), data LONGBLOB), compression INT(12)");
-
     }
 
     @Override
@@ -48,7 +42,6 @@ public class MySQLService extends DatabaseService {
         pst.setInt(10, compression);
 
         pool.execute(() -> database.update(pst));
-
     }
 
     @Override
@@ -73,22 +66,18 @@ public class MySQLService extends DatabaseService {
     @Override
     public void deleteReplay(String id) {
         try {
-
             PreparedStatement pst = database.getConnection().prepareStatement("DELETE FROM " + this.table + " WHERE id = ?");
             pst.setString(1, id);
 
             pool.execute(() -> database.update(pst));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
     public boolean exists(String id) {
         try {
-
             PreparedStatement pst = database.getConnection().prepareStatement("SELECT COUNT(1) FROM " + this.table + " WHERE id = ?");
             pst.setString(1, id);
 
@@ -108,7 +97,6 @@ public class MySQLService extends DatabaseService {
     public List<ReplayInfo> getReplays() {
         List<ReplayInfo> replays = new ArrayList<>();
         try {
-
             PreparedStatement pst = database.getConnection().prepareStatement("SELECT id,creator,duration,time FROM " + this.table);
             ResultSet rs = database.query(pst);
 
@@ -126,8 +114,6 @@ public class MySQLService extends DatabaseService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return replays;
     }
-
 }

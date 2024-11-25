@@ -4,11 +4,8 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.annotations.SerializedName;
 
-public abstract class JsonClass implements ExclusionStrategy{
-
-	
-	
- 	@Override
+public abstract class JsonClass implements ExclusionStrategy {
+    @Override
     public boolean shouldSkipClass(Class<?> arg0) {
         return false;
     }
@@ -16,7 +13,7 @@ public abstract class JsonClass implements ExclusionStrategy{
     @Override
     public boolean shouldSkipField(FieldAttributes field) {
         SerializedName ns = field.getAnnotation(SerializedName.class);
-        if(ns != null)
+        if (ns != null)
             return false;
         return true;
     }

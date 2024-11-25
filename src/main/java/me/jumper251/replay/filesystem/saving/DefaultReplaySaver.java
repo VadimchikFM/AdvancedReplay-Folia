@@ -22,7 +22,7 @@ public class DefaultReplaySaver implements IReplaySaver {
     public final static File DIR = new File(ReplaySystem.getInstance().getDataFolder() + "/replays/");
     private boolean reformatting;
 
-    private ExecutorService pool = Executors.newCachedThreadPool();
+    private ExecutorService pool = Executors.newCachedThreadPool(Thread.ofVirtual().factory());
 
     @Override
     public void saveReplay(Replay replay) {
@@ -32,17 +32,14 @@ public class DefaultReplaySaver implements IReplaySaver {
         try {
             if (!file.exists()) file.createNewFile();
 
-            FileOutputStream fileOut = new FileOutputStream(file);
-            FilterOutputStream out = ConfigManager.getCompressOutputStream(fileOut);
-            ObjectOutputStream objectOut = new ObjectOutputStream(out);
-
-            objectOut.writeObject(replay.getData());
-            objectOut.flush();
-
-            out.close();
-            fileOut.close();
-            objectOut.close();
-
+            try (FileOutputStream fileOut = new FileOutputStream(file)) {
+                try (FilterOutputStream out = ConfigManager.getCompressOutputStream(fileOut)) {
+                    try (ObjectOutputStream objectOut = new ObjectOutputStream(out)) {
+                        objectOut.writeObject(replay.getData());
+                        objectOut.flush();
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,17 +54,17 @@ public class DefaultReplaySaver implements IReplaySaver {
                 try {
                     File file = new File(DIR, replayName + ".replay");
 
-                    FileInputStream fileIn = new FileInputStream(file);
-                    FilterInputStream in = ConfigManager.getCompressInputStream(fileIn);
-                    ObjectInputStream objectIn = new ObjectInputStream(in);
+                    ReplayData data;
 
-                    ReplayData data = (ReplayData) objectIn.readObject();
+                    try (FileInputStream fileIn = new FileInputStream(file)) {
+                        try (FilterInputStream in = ConfigManager.getCompressInputStream(fileIn)) {
+                            try (ObjectInputStream objectIn = new ObjectInputStream(in)) {
+                                data = (ReplayData) objectIn.readObject();
+                            }
+                        }
+                    }
 
-                    objectIn.close();
-                    in.close();
-                    fileIn.close();
-
-                    return new Replay(replayName, data);
+                    if (data != null) return new Replay(replayName, data);
                 } catch (Exception e) {
                     if (!reformatting) e.printStackTrace();
                 }
@@ -109,17 +106,17 @@ public class DefaultReplaySaver implements IReplaySaver {
                 try {
                     File file = new File(DIR, replayName + ".replay");
 
-                    FileInputStream fileIn = new FileInputStream(file);
-                    ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+                    ReplayData data;
+                    try (FileInputStream fileIn = new FileInputStream(file)) {
+                        try (ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
+                             data = (ReplayData) objectIn.readObject();
+                        }
+                    }
 
-                    ReplayData data = (ReplayData) objectIn.readObject();
-
-                    objectIn.close();
-                    fileIn.close();
-
-                    deleteReplay(replayName);
-                    saveReplay(new Replay(replayName, data));
-
+                    if (data != null) {
+                        deleteReplay(replayName);
+                        saveReplay(new Replay(replayName, data));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
