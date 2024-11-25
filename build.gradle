@@ -4,7 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-
 repositories {
     // Central
     maven { url = "https://maven-central-asia.storage-download.googleapis.com/maven2/" }
@@ -34,7 +33,7 @@ dependencies {
 
 allprojects {
     group = 'me.jumper251.replay'
-    version = '1.8.11'
+    version = '22.11.0'
 
     apply plugin: 'java'
     apply plugin: 'maven-publish'
