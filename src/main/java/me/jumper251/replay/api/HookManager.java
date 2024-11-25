@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HookManager {
+	private List<IReplayHook> hooks = new ArrayList<>();
 
-	private List<IReplayHook> hooks = new ArrayList<IReplayHook>();
-	
-	
 	public void registerHook(IReplayHook hook) {
 		if (!this.hooks.contains(hook)) {
 			this.hooks.add(hook);

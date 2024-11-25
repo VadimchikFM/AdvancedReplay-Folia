@@ -14,14 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ItemConfig {
-
-
     private static final Map<String, String> FIXES = new HashMap<>();
-
     public static File file = new File(ReplaySystem.getInstance().getDataFolder(), "items.yml");
-
     public static FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-
     public static HashMap<ItemConfigType, ItemConfigOption> items = new HashMap<>();
 
     static {
@@ -51,7 +46,6 @@ public class ItemConfig {
                 }
 
                 cfg.set("items." + name + ".enabled", item.isEnabled());
-
             }
 
             try {
@@ -61,7 +55,6 @@ public class ItemConfig {
             }
         }
     }
-
 
     public static void loadData() {
         for (ItemConfigType type : ItemConfigType.values()) {
@@ -93,10 +86,8 @@ public class ItemConfig {
             }
 
             items.put(type, new ItemConfigOption(material, displayName, slot, owner, data, texture).enable(enabled));
-
         }
     }
-
 
     public static ItemConfigOption getItem(ItemConfigType type) {
         return items.get(type);
@@ -127,6 +118,4 @@ public class ItemConfig {
             items.put(ItemConfigType.PAUSE, new ItemConfigOption(MaterialBridge.PLAYER_HEAD.toMaterial(), "&cPause", 4, "Push_red_button", 3));
         }
     }
-
-
 }

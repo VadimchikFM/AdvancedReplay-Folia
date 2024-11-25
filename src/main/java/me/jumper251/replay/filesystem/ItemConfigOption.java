@@ -2,21 +2,13 @@ package me.jumper251.replay.filesystem;
 
 import org.bukkit.Material;
 
-
 public class ItemConfigOption {
-
     private Material material;
-
     private String name;
-
     private int slot;
-
     private String owner;
-
     private String texture;
-
     private int data;
-
     private boolean enabled;
 
     public ItemConfigOption(Material material, String name, int slot) {

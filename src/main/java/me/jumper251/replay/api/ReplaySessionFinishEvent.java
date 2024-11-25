@@ -1,5 +1,6 @@
 package me.jumper251.replay.api;
 
+import me.jumper251.replay.utils.Platform;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -8,15 +9,12 @@ import org.bukkit.event.HandlerList;
 import me.jumper251.replay.replaysystem.Replay;
 
 public class ReplaySessionFinishEvent extends Event {
-
     private static final HandlerList HANDLERS = new HandlerList();
-
     private Replay replay;
-    
     private Player player;
     
     public ReplaySessionFinishEvent(Replay replay, Player player) {
-    	super(!Bukkit.isPrimaryThread());
+    	super(Platform.isFolia() || !Bukkit.isPrimaryThread());
     	
     	this.replay = replay;
     	this.player = player;

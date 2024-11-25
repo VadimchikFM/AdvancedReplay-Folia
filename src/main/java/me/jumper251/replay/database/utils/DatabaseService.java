@@ -1,6 +1,5 @@
 package me.jumper251.replay.database.utils;
 
-import me.jumper251.replay.replaysystem.data.CompressionData;
 import me.jumper251.replay.replaysystem.data.ReplayInfo;
 
 import java.sql.SQLException;
@@ -13,7 +12,7 @@ public abstract class DatabaseService {
     protected ExecutorService pool;
 
     public DatabaseService() {
-        this.pool = Executors.newCachedThreadPool();
+        this.pool = Executors.newCachedThreadPool(Thread.ofVirtual().factory());
     }
 
     public abstract void createReplayTable();

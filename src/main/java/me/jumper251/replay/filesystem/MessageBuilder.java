@@ -1,14 +1,10 @@
 package me.jumper251.replay.filesystem;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-
 public class MessageBuilder {
-
     private String message;
-
     private boolean prefixed;
 
     public MessageBuilder(String message) {
@@ -30,7 +26,6 @@ public class MessageBuilder {
         if (this.message != null && this.message.contains("{" + key + "}")) {
             this.message = this.message.replace("{" + key + "}", value.toString());
         }
-
         return this;
     }
 
@@ -59,7 +54,6 @@ public class MessageBuilder {
             if (prefixed) {
                 message = Messages.PREFIX.getMessage() + message;
             }
-
             return ChatColor.translateAlternateColorCodes('&', this.message);
         } else {
             return null;

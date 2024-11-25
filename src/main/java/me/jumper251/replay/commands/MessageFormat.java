@@ -3,9 +3,7 @@ package me.jumper251.replay.commands;
 import me.jumper251.replay.filesystem.MessageBuilder;
 
 public class MessageFormat {
-
 	private String syntaxMessage, overviewMessage, permissionMessage, consoleMessage, notFoundMessage;
-	
 	
 	public MessageFormat syntax(String syntaxMessage) {
 		this.syntaxMessage = syntaxMessage;
