@@ -7,7 +7,6 @@ import me.jumper251.replay.database.MySQLDatabase;
 import me.jumper251.replay.replaysystem.recording.optimization.ReplayQuality;
 import me.jumper251.replay.replaysystem.replaying.session.ReplayProgressType;
 import me.jumper251.replay.replaysystem.replaying.session.ReplayProgression;
-import me.jumper251.replay.utils.LogUtils;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -53,81 +52,76 @@ public class ConfigManager {
     public static String CHAT_FORMAT;
 
     public static void loadConfigs() {
-        if (!sqlFile.exists()) {
-            sqlCfg.set("host", "localhost");
-            sqlCfg.set("port", 3306);
-            sqlCfg.set("username", "username");
-            sqlCfg.set("database", "database");
-            sqlCfg.set("password", "password");
-            sqlCfg.set("prefix", "");
-            sqlCfg.set("properties", MySQLDatabase.DEFAULT_PROPERTIES);
+        // SQL Config
+        sqlCfg.addDefault("host", "localhost");
+        sqlCfg.addDefault("port", 3306);
+        sqlCfg.addDefault("username", "username");
+        sqlCfg.addDefault("database", "database");
+        sqlCfg.addDefault("password", "password");
+        sqlCfg.addDefault("prefix", "");
+        sqlCfg.addDefault("properties", MySQLDatabase.DEFAULT_PROPERTIES);
 
-            try {
-                sqlCfg.save(sqlFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            sqlCfg.save(sqlFile);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (!s3File.exists()) {
-            s3Cfg.set("endpoint_url", "https://example.com/");
-            s3Cfg.set("access_key", "123qwertz456");
-            s3Cfg.set("secret_key", "987yxcv654");
-            s3Cfg.set("bucket_name", "replays");
+        // S3 Config
+        s3Cfg.addDefault("endpoint_url", "https://example.com/");
+        s3Cfg.addDefault("access_key", "123qwertz456");
+        s3Cfg.addDefault("secret_key", "987yxcv654");
+        s3Cfg.addDefault("bucket_name", "replays");
 
-            try {
-                s3Cfg.save(s3File);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            s3Cfg.save(s3File);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (!mongoFile.exists()) {
-            mongoCfg.set("username", "mongouser");
-            mongoCfg.set("password", "mongopass");
-            mongoCfg.set("host", "localhost");
-            mongoCfg.set("port", 27017);
-            mongoCfg.set("database", "replays");
+        // MongoDB
+        mongoCfg.addDefault("username", "mongouser");
+        mongoCfg.addDefault("password", "mongopass");
+        mongoCfg.addDefault("host", "localhost");
+        mongoCfg.addDefault("port", 27017);
+        mongoCfg.addDefault("database", "replays");
 
-            try {
-                mongoCfg.save(mongoFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            mongoCfg.save(mongoFile);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (!file.exists()) {
-            LogUtils.log("Creating Config files...");
 
-            cfg.set("general.max_length", 3600);
-            cfg.set("general.record_on_startup", false);
-            cfg.set("general.save_on_stop", false);
-            cfg.set("general.use_mysql", false);
-            cfg.set("general.use_s3", false);
-            cfg.set("general.use_mongo", false);
-            cfg.set("general.use_offline_skins", false);
-            cfg.set("general.quality", "high");
-            cfg.set("general.cleanup_replays", -1);
-            cfg.set("general.hide_players", false);
-            cfg.set("general.add_new_players", false);
-            cfg.set("general.update_notifications", true);
+        // Default config
+        cfg.addDefault("general.max_length", 3600);
+        cfg.addDefault("general.record_on_startup", false);
+        cfg.addDefault("general.save_on_stop", false);
+        cfg.addDefault("general.use_mysql", false);
+        cfg.addDefault("general.use_s3", false);
+        cfg.addDefault("general.use_mongo", false);
+        cfg.addDefault("general.use_offline_skins", false);
+        cfg.addDefault("general.quality", "high");
+        cfg.addDefault("general.cleanup_replays", -1);
+        cfg.addDefault("general.hide_players", false);
+        cfg.addDefault("general.add_new_players", false);
+        cfg.addDefault("general.update_notifications", true);
 
-            cfg.set("replaying.world.reset_changes", false);
-            cfg.set("replaying.progress_display", ReplayProgressType.getDefault().name().toLowerCase());
+        cfg.addDefault("replaying.world.reset_changes", false);
+        cfg.addDefault("replaying.progress_display", ReplayProgressType.getDefault().name().toLowerCase());
 
-            cfg.set("recording.blocks.enabled", true);
-            cfg.set("recording.blocks.real_changes", true);
-            cfg.set("recording.entities.enabled", false);
-            cfg.set("recording.entities.items.enabled", true);
-            cfg.set("recording.chat.enabled", false);
-            cfg.set("recording.chat.format", "&r<{name}> {message}");
+        cfg.addDefault("recording.blocks.enabled", true);
+        cfg.addDefault("recording.blocks.real_changes", true);
+        cfg.addDefault("recording.entities.enabled", false);
+        cfg.addDefault("recording.entities.items.enabled", true);
+        cfg.addDefault("recording.chat.enabled", false);
+        cfg.addDefault("recording.chat.format", "&r<{name}> {message}");
 
 
-            try {
-                cfg.save(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         ItemConfig.loadConfig();
