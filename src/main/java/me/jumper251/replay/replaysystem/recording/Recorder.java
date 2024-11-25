@@ -153,7 +153,7 @@ public class Recorder {
             this.data.setCreator(creator);
             this.data.setWatchers(new HashMap<>());
             this.replay.setData(this.data);
-            this.replay.setReplayInfo(new ReplayInfo(this.replay.getId(), creator, System.currentTimeMillis(), this.currentTick));
+            this.replay.setReplayInfo(new ReplayInfo(this.replay.getId(), creator, System.currentTimeMillis(), ConfigManager.RECORD_COMPRESSION.toInt(), this.currentTick));
             ReplaySaver.save(this.replay);
         } else {
             this.data.getActions().clear();

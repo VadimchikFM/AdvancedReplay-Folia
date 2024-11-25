@@ -7,6 +7,8 @@ api-version: 1.20
 folia-supported: true
 libraries:
   - org.mongodb:mongodb-driver-sync:5.2.0
+  - com.github.luben:zstd-jni:1.5.6-8
+  - org.lz4:lz4-java:1.8.0
 commands:
   replay:
     description: Main Replay command

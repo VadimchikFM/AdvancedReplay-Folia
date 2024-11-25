@@ -1,22 +1,27 @@
 package me.jumper251.replay.filesystem;
 
+import com.github.luben.zstd.ZstdInputStream;
+import com.github.luben.zstd.ZstdOutputStream;
 import me.jumper251.replay.ReplaySystem;
 import me.jumper251.replay.database.DatabaseRegistry;
 import me.jumper251.replay.database.MongoDatabase;
 import me.jumper251.replay.database.MySQLDatabase;
+import me.jumper251.replay.replaysystem.data.CompressType;
 import me.jumper251.replay.replaysystem.recording.optimization.ReplayQuality;
 import me.jumper251.replay.replaysystem.replaying.session.ReplayProgressType;
 import me.jumper251.replay.replaysystem.replaying.session.ReplayProgression;
+import net.jpountz.lz4.LZ4FrameInputStream;
+import net.jpountz.lz4.LZ4FrameOutputStream;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class ConfigManager {
 
@@ -39,6 +44,8 @@ public class ConfigManager {
     public static boolean RECORD_CHAT;
     public static boolean SAVE_STOP, RECORD_STARTUP, USE_OFFLINE_SKINS, HIDE_PLAYERS, UPDATE_NOTIFY, USE_DATABASE, ADD_PLAYERS;
     public static boolean WORLD_RESET;
+
+    public static CompressType RECORD_COMPRESSION;
 
     public static ReplayProgression PROGRESS_TYPE = ReplayProgressType.XP_BAR;
 
@@ -123,6 +130,7 @@ public class ConfigManager {
             cfg.set("recording.entities.items.enabled", true);
             cfg.set("recording.chat.enabled", false);
             cfg.set("recording.chat.format", "&r<{name}> {message}");
+            cfg.set("recording.file.compress", 0);
 
             try {
                 cfg.save(file);
@@ -158,6 +166,7 @@ public class ConfigManager {
         RECORD_ITEMS = cfg.getBoolean("recording.entities.items.enabled");
         RECORD_ENTITIES = cfg.getBoolean("recording.entities.enabled");
         RECORD_CHAT = cfg.getBoolean("recording.chat.enabled");
+        RECORD_COMPRESSION = CompressType.fromInt(cfg.getInt("recording.file.compression"));
 
         PROGRESS_TYPE = ReplayProgressType.valueOf(cfg.getString("replaying.progress_display", ReplayProgressType.getDefault().name()).toUpperCase());
 
@@ -209,5 +218,21 @@ public class ConfigManager {
         }
 
         loadData(false);
+    }
+
+    public static FilterOutputStream getCompressOutputStream(OutputStream out) throws java.io.IOException {
+        return switch (RECORD_COMPRESSION) {
+            case LZ4 -> new LZ4FrameOutputStream(out);
+            case ZSTD -> new ZstdOutputStream(out, 7);
+            default -> new GZIPOutputStream(out);
+        };
+    }
+
+    public static FilterInputStream getCompressInputStream(InputStream in) throws java.io.IOException {
+        return switch (CompressType.detectCompression(in)) { // Automatic identification
+            case LZ4 -> new LZ4FrameInputStream(in);
+            case ZSTD -> new ZstdInputStream(in);
+            default -> new GZIPInputStream(in);
+        };
     }
 }

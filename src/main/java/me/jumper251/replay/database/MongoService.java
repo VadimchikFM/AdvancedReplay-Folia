@@ -4,12 +4,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import me.jumper251.replay.database.utils.DatabaseService;
+import me.jumper251.replay.replaysystem.data.CompressionData;
 import me.jumper251.replay.replaysystem.data.ReplayInfo;
 import org.bson.Document;
 import org.bson.types.Binary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MongoService extends DatabaseService {
     private final MongoDatabase database;
@@ -28,11 +30,12 @@ public class MongoService extends DatabaseService {
     }
 
     @Override
-    public void addReplay(String id, String creator, int duration, Long time, byte[] data) {
+    public void addReplay(String id, String creator, int duration, int compression, Long time, byte[] data) {
         Document query = new Document("id", id);
         Document updateDoc = new Document()
                 .append("creator", creator)
                 .append("duration", duration)
+                .append("compression", compression)
                 .append("time", time)
                 .append("data", data);
 
@@ -103,13 +106,15 @@ public class MongoService extends DatabaseService {
                     .append("creator", 1)
                     .append("duration", 1)
                     .append("time", 1)
+                    .append("compression", 1)
                     .append("_id", 0))) {
                 String id = doc.getString("id");
                 String creator = doc.getString("creator");
+                int compression = doc.getInteger("compression");
                 int duration = doc.getInteger("duration", 0);
                 long time = doc.getLong("time");
 
-                replays.add(new ReplayInfo(id, creator, time, duration));
+                replays.add(new ReplayInfo(id, creator, time, compression, duration));
             }
         } catch (Exception e) {
             e.printStackTrace();

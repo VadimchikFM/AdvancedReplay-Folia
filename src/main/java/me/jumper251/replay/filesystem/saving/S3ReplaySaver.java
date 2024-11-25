@@ -3,6 +3,7 @@ package me.jumper251.replay.filesystem.saving;
 import io.minio.*;
 import io.minio.messages.Item;
 import me.jumper251.replay.ReplaySystem;
+import me.jumper251.replay.filesystem.ConfigManager;
 import me.jumper251.replay.replaysystem.Replay;
 import me.jumper251.replay.replaysystem.data.ReplayData;
 import me.jumper251.replay.utils.fetcher.Consumer;
@@ -11,8 +12,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class S3ReplaySaver implements IReplaySaver {
     private String endpointUrl;
@@ -87,14 +86,14 @@ public class S3ReplaySaver implements IReplaySaver {
                     localReplayFile.createNewFile();
 
                     FileOutputStream fileOutputStream = new FileOutputStream(localReplayFile);
-                    GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(gzipOutputStream);
+                    FilterOutputStream outputStream = ConfigManager.getCompressOutputStream(fileOutputStream);
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
                     objectOutputStream.writeObject(replay.getData());
                     objectOutputStream.flush();
 
                     objectOutputStream.close();
-                    gzipOutputStream.close();
+                    outputStream.close();
                     fileOutputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -152,13 +151,13 @@ public class S3ReplaySaver implements IReplaySaver {
             // 3. Load replay from temporary local file
             try {
                 FileInputStream fileInputStream = new FileInputStream(temporaryReplayFile);
-                GZIPInputStream gzipInputStream = new GZIPInputStream(fileInputStream);
-                ObjectInputStream objectInputStream = new ObjectInputStream(gzipInputStream);
+                FilterInputStream inputStream = ConfigManager.getCompressInputStream(fileInputStream);
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
                 ReplayData replayData = (ReplayData) objectInputStream.readObject();
 
                 objectInputStream.close();
-                gzipInputStream.close();
+                inputStream.close();
                 fileInputStream.close();
 
                 consumer.accept(new Replay(replayName, replayData));
