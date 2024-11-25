@@ -88,6 +88,12 @@ public class ConfigManager {
             mongoCfg.set("host", "localhost");
             mongoCfg.set("port", 27017);
             mongoCfg.set("database", "replays");
+
+            try {
+                mongoCfg.save(mongoFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         if (!file.exists()) {
