@@ -45,14 +45,7 @@ public class MySQLService extends DatabaseService {
 		pst.setLong(8, time);
 		pst.setBytes(9, data);
 		
-		pool.execute(new Runnable() {
-			
-			@Override
-			public void run() {
-				database.update(pst);
-				
-			}
-		});
+		pool.execute(() -> database.update(pst));
 		
 	}
 
@@ -84,14 +77,7 @@ public class MySQLService extends DatabaseService {
 			PreparedStatement pst = database.getConnection().prepareStatement("DELETE FROM " + this.table + " WHERE id = ?");
 			pst.setString(1, id);
 			
-			pool.execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					database.update(pst);
-					
-				}
-			});
+			pool.execute(() -> database.update(pst));
 			
 		} catch (Exception e) {
 			e.printStackTrace();

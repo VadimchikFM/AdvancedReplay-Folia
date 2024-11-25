@@ -6,7 +6,8 @@ plugins {
 
 
 repositories {
-    mavenCentral()
+    // Central
+    maven { url = "https://maven-central-asia.storage-download.googleapis.com/maven2/" }
     maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
     maven { url = "https://repo.papermc.io/repository/maven-public/" }
     // ProtocolLib repo
@@ -25,6 +26,8 @@ dependencies {
     implementation 'com.alessiodp.libby:libby-bukkit:2.0.0-SNAPSHOT'
     // S3 storage backend
     compileOnly 'io.minio:minio:8.5.12'
+    // MongoDB Driver
+    compileOnly 'org.mongodb:mongodb-driver-sync:5.2.0'
 }
 
 allprojects {
