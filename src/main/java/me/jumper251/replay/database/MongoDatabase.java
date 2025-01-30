@@ -7,6 +7,7 @@ import com.mongodb.client.model.FindOneAndUpdateOptions;
 import me.jumper251.replay.database.utils.Database;
 import me.jumper251.replay.database.utils.DatabaseService;
 import me.jumper251.replay.utils.LogUtils;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class MongoDatabase extends Database {
 
     public MongoDatabase(String host, int port, String database, String collectionName, String user, String password) {
         super(host, port, database, user, password);
+
+        Configurator.setLevel("org.mongodb.driver.client", org.apache.logging.log4j.Level.WARN);
+
         String connectionString1 = "mongodb://";
         if (user == null || user.isEmpty()) connectionString1 = connectionString1 + host + ":" + port;
         else if (password == null || password.isEmpty())
