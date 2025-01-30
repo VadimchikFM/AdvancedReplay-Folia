@@ -1,5 +1,8 @@
 package me.jumper251.replay.replaysystem.data;
 
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,7 +17,8 @@ public enum CompressType {
         };
     }
 
-    public static CompressType detectCompression(InputStream inputStream) throws IOException {
+    public static CompressType detectCompression(@NotNull InputStream inputStream) throws IOException {
+        Validate.notNull(inputStream, "InputStream must be a valid value.");
         inputStream.mark(4);
 
         byte[] magicBytes = new byte[4];
