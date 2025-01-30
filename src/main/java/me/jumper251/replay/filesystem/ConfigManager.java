@@ -229,10 +229,11 @@ public class ConfigManager {
     }
 
     public static FilterInputStream getCompressInputStream(InputStream in) throws java.io.IOException {
-        return switch (CompressType.detectCompression(in)) { // Automatic identification
-            case LZ4 -> new LZ4FrameInputStream(in);
-            case ZSTD -> new ZstdInputStream(in);
-            default -> new GZIPInputStream(in);
+        var result = CompressType.detectCompression(in);
+        return switch (result.compressType()) { // Automatic identification
+            case LZ4 -> new LZ4FrameInputStream(result.inputStream());
+            case ZSTD -> new ZstdInputStream(result.inputStream());
+            default -> new GZIPInputStream(result.inputStream());
         };
     }
 }

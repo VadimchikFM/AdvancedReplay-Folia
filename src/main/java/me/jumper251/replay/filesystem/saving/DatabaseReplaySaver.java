@@ -57,17 +57,14 @@ public class DatabaseReplaySaver implements IReplaySaver {
                 try {
                     byte[] data = DatabaseRegistry.getDatabase().getService().getReplayData(replayName);
 
-                    ByteArrayInputStream byteIn = new ByteArrayInputStream(data);
-                    FilterInputStream in = ConfigManager.getCompressInputStream(byteIn);
-                    ObjectInputStream objectIn = new ObjectInputStream(in);
-
-                    ReplayData replayData = (ReplayData) objectIn.readObject();
-
-                    objectIn.close();
-                    in.close();
-                    byteIn.close();
-
-                    return new Replay(replayName, replayData);
+                    try (ByteArrayInputStream byteIn = new ByteArrayInputStream(data)) {
+                        try (FilterInputStream in = ConfigManager.getCompressInputStream(byteIn)) {
+                            try (ObjectInputStream objectIn = new ObjectInputStream(in)) {
+                                ReplayData replayData = (ReplayData) objectIn.readObject();
+                                return new Replay(replayName, replayData);
+                            }
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

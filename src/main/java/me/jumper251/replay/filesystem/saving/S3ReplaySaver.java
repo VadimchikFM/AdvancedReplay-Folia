@@ -9,7 +9,9 @@ import me.jumper251.replay.replaysystem.data.ReplayData;
 import me.jumper251.replay.utils.fetcher.Consumer;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -151,7 +153,7 @@ public class S3ReplaySaver implements IReplaySaver {
             // 3. Load replay from temporary local file
             ReplayData replayData;
             try (FileInputStream fileInputStream = new FileInputStream(temporaryReplayFile)) {
-                try (FilterInputStream inputStream = ConfigManager.getCompressInputStream(fileInputStream)){
+                try (FilterInputStream inputStream = ConfigManager.getCompressInputStream(fileInputStream)) {
                     try (ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                         replayData = (ReplayData) objectInputStream.readObject();
                     }

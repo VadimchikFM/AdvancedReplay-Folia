@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 
 public enum CompressType {
     Gzip, ZSTD, LZ4, UNKNOWN;
@@ -17,42 +18,53 @@ public enum CompressType {
         };
     }
 
-    public static CompressType detectCompression(@NotNull InputStream inputStream) throws IOException {
+    public static CompressDetectionResult detectCompression(@NotNull InputStream inputStream) throws IOException {
         Validate.notNull(inputStream, "InputStream must be a valid value.");
-        inputStream.mark(4);
 
-        byte[] magicBytes = new byte[4];
-        int bytesRead = inputStream.read(magicBytes);
-        inputStream.reset();
+        PushbackInputStream pbIn = new PushbackInputStream(inputStream, 8);
 
-        if (bytesRead < 2) {
-            return CompressType.UNKNOWN;
+        byte[] buf = new byte[8];
+        int bytesRead = pbIn.read(buf, 0, buf.length);
+
+        if (bytesRead > 0) {
+            pbIn.unread(buf, 0, bytesRead);
         }
 
-        int magic = ((magicBytes[0] & 0xFF) << 8) | (magicBytes[1] & 0xFF);
-
-        if (magic == 0x1F8B) {
-            return CompressType.Gzip;
-        }
-
-        if (bytesRead >= 4) {
-            int zstdMagic = ((magicBytes[0] & 0xFF) << 24) | ((magicBytes[1] & 0xFF) << 16) |
-                    ((magicBytes[2] & 0xFF) << 8) | (magicBytes[3] & 0xFF);
-            if (zstdMagic == 0x28B52FFD) {
-                return CompressType.ZSTD;
-            }
-        }
-
-        if (bytesRead >= 4) {
-            int lz4Magic = ((magicBytes[0] & 0xFF) << 24) | ((magicBytes[1] & 0xFF) << 16) |
-                    ((magicBytes[2] & 0xFF) << 8) | (magicBytes[3] & 0xFF);
-            if (lz4Magic == 0x04224D18 || lz4Magic == 0x184D2204) {
-                return CompressType.LZ4;
-            }
-        }
-
-        return CompressType.UNKNOWN;
+        CompressType type = doDetectByMagic(buf, bytesRead);
+        return new CompressDetectionResult(type, pbIn);
     }
+
+    private static CompressType doDetectByMagic(byte[] magicBytes, int bytesRead) {
+        if (bytesRead < 2) {
+            return UNKNOWN;
+        }
+
+        int gzipCheck = ((magicBytes[0] & 0xFF) << 8) | (magicBytes[1] & 0xFF);
+        if (gzipCheck == 0x1F8B) {
+            return Gzip;
+        }
+
+        if (bytesRead >= 4) {
+            int magicAll = ((magicBytes[0] & 0xFF) << 24)
+                    | ((magicBytes[1] & 0xFF) << 16)
+                    | ((magicBytes[2] & 0xFF) << 8)
+                    | (magicBytes[3] & 0xFF);
+
+            if (magicAll == 0x28B52FFD) {
+                return ZSTD;
+            }
+            if (magicAll == 0x04224D18 || magicAll == 0x184D2204) {
+                return LZ4;
+            }
+        }
+
+        return UNKNOWN;
+    }
+
+
+    public record CompressDetectionResult(CompressType compressType, InputStream inputStream) {
+    }
+
 
     public int toInt() {
         return switch (this) {

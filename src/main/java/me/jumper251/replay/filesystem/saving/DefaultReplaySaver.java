@@ -109,7 +109,7 @@ public class DefaultReplaySaver implements IReplaySaver {
                     ReplayData data;
                     try (FileInputStream fileIn = new FileInputStream(file)) {
                         try (ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
-                             data = (ReplayData) objectIn.readObject();
+                            data = (ReplayData) objectIn.readObject();
                         }
                     }
 
