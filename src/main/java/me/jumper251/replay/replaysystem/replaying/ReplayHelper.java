@@ -7,11 +7,11 @@ import com.google.gson.Gson;
 import me.jumper251.replay.filesystem.ItemConfig;
 import me.jumper251.replay.filesystem.ItemConfigOption;
 import me.jumper251.replay.filesystem.ItemConfigType;
-import me.jumper251.replay.utils.version.MaterialBridge;
 import me.jumper251.replay.utils.ReflectionHelper;
 import me.jumper251.replay.utils.VersionUtil;
 import me.jumper251.replay.utils.VersionUtil.VersionEnum;
 import me.jumper251.replay.utils.fetcher.TextureInfo;
+import me.jumper251.replay.utils.version.MaterialBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,7 +21,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
 import java.util.Base64;
@@ -40,9 +39,7 @@ public class ReplayHelper {
         ItemStack stack = createItem(option.getMaterial(), displayName, option.getData());
 
 
-        if (stack.getItemMeta() instanceof SkullMeta) {
-
-            SkullMeta meta = (SkullMeta) stack.getItemMeta();
+        if (stack.getItemMeta() instanceof SkullMeta meta) {
             if (option.getOwner() != null) {
                 meta.setOwner(option.getOwner());
             }
@@ -131,7 +128,7 @@ public class ReplayHelper {
     }
 
     public static void setSkullTexture(SkullMeta meta, String texture) {
-        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "");
+        com.destroystokyo.paper.profile.PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), "");
         PlayerTextures textures = profile.getTextures();
         String decoded = new String(Base64.getDecoder().decode(texture));
 
@@ -139,7 +136,8 @@ public class ReplayHelper {
         if (info.getTextures() != null && info.getTextures().getSkin().getUrl() != null) {
             textures.setSkin(info.getTextures().getSkin().getUrl());
             profile.setTextures(textures);
-            meta.setOwnerProfile(profile);
+            meta.setPlayerProfile(profile);
+            // meta.setOwnerProfile(profile);
         }
     }
 
